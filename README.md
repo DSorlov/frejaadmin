@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://img.shields.io/github/license/DSorlov/frejaadmin)
 
 # frejaadmin
-A minimalistic Freja eID Organisation ID administration service. Designed to run as a container. Using [eid-provider](https://github.com/DSorlov/eid-provider) 0.1.9 or later to integrate with Freja APIs.
+A minimalistic Freja eID Organisation ID administration service. Designed to run as a container. Using [eid-provider](https://github.com/DSorlov/eid-provider) 0.1.9 or later to integrate with Freja APIs. Prebuilt image availiable on [docker hub](https://hub.docker.com/repository/docker/dsorlov/frejaadmin)
 
 ## Config directory (data)
 - config.json: Main config file
