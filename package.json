@@ -1,6 +1,6 @@
 {
   "name": "frejaadmin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Provides a simple GUI for Freja OrgID administration",
   "main": "index.js",
   "scripts": {
