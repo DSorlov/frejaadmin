@@ -21,15 +21,15 @@
     "admins": [
       {
         "ssn": "199912245579",
-        "level": "useradmin,classadmin,logviewer"
+        "level": "orgidadmin,useradmin,classadmin,logviewer,logadmin"
       }
     ],
     "service": {
       "eidprofile": "testing",
       "auditing": "auth,orgid,user,log",
       "hostname": "server.domain.com",
-      "port": 3000,
+      "port": 3180,
       "cookie_secret": "36c25f37-92c6-4f95-9c09-c9164b391a55",
-      "puppetmaster": "199912245579"
+      "puppetmaster": "199912125579"
     }
   }

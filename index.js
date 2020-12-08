@@ -28,13 +28,14 @@ if (!fs.existsSync(path.join(__dirname, './data', 'auditlogs'))) fs.mkdirSync(pa
 if (!fs.existsSync(path.join(__dirname, './data', 'pending'))) fs.mkdirSync(path.join(__dirname, './data', 'pending'));
 
 // If there is no sample config and there is no production, create a sample copy
-if (!fs.existsSync(path.join(__dirname, './data', 'sampleconfig.json')) && !fs.existsSync(path.join(__dirname, './data', 'config.json'))) {
-  fs.copyFile(path.join(__dirname, './sampleconfig.json'), path.join(__dirname, './data', 'sampleconfig.json'), (err) => {});
-  fs.copyFile(path.join(__dirname, './frejaeid_test.pfx'), path.join(__dirname, './data', 'frejaeid_test.pfx'), (err) => {});
+if (!fs.existsSync(path.join(__dirname, './data', 'config.json'))) {
+  try {
+    fs.copyFileSync(path.join(__dirname, './sampleconfig.json'), path.join(__dirname, './data', 'config.json'));  
+    fs.copyFileSync(path.join(__dirname, './frejaeid_test.pfx'), path.join(__dirname, './data', 'frejaeid_test.pfx'));
+  } catch (errir) {
+    errorExit('Config error: No configuration file found (config.json) and failed to copy sample'+errir);
+  }
 }
-
-// Check if there is a config file to parse
-if (!fs.existsSync(path.join(__dirname, './data', 'config.json'))) errorExit('Config error: No configuration file found (config.json)');
 
 // Parse the config file
 var config = {};
@@ -102,7 +103,7 @@ function strbool(value) {
 
 // Add something to the auditlog
 function auditlog(lvl,session,message) {
-  var ssn = session.user.ssn.ssn;
+  var ssn = session.user.id;
   var name = session.user.fullname;
   if (config.service.auditing.includes(lvl)) {
     var logfile = dateFormat(new Date(), "yyyymmdd") + ".log"
@@ -166,14 +167,13 @@ if (fs.existsSync(path.join(__dirname, './config/static'))) {
 // Show the login form
 app.get("/", (req, res) => {
 
-  req.session.authenticated = ["useradmin","orgidadmin","classadmin","logadmin","logviewer"];
-  req.session.user = {};
-  req.session.user.fullname = "TESTING"; 
-  req.session.user.ssn = { ssn: "198181810101"};
-  req.session.save();
-  res.send(templates['adminform_ejs'](commonPageVars(Object.assign(req))));
-
-  return;
+  //req.session.authenticated = ["useradmin","orgidadmin","classadmin","logadmin","logviewer"];
+  //req.session.user = {};
+  //req.session.user.fullname = "TESTING"; 
+  //req.session.user.ssn = { ssn: "198181810101"};
+  //req.session.save();
+  //res.send(templates['adminform_ejs'](commonPageVars(Object.assign(req))));
+  //return;
 
   if (req.session.authenticated)
     res.send(templates['adminform_ejs'](commonPageVars(Object.assign(req))));
@@ -210,9 +210,9 @@ app.use(function (req, res, next) {
 })
 
 // Handle 500
-//app.use(function (err, req, res, next) {
-//  res.status(500).send(templates.error_500(commonPageVars(err)));
-//})
+app.use(function (err, req, res, next) {
+  res.status(500).send(templates.error_500(commonPageVars(err)));
+})
 
 
 
@@ -435,7 +435,7 @@ io.on("connection", function(socket) {
     var eidClient = initProvider('frejaeid');
 
     var idObject = {type: 'INFERRED'};
-    idObject['INFERRED'] = 'N/A';
+    idObject['inferred'] = 'N/A';
 
     eidClient.initAuthRequest(idObject).then(function(result){
         socket.emit("authenticationInitResponse", result); 
@@ -460,14 +460,14 @@ io.on("connection", function(socket) {
           socket.handshake.session.authenticated = ["useradmin","orgidadmin","classadmin","logadmin","logviewer"];
           socket.handshake.session.user = {};
           socket.handshake.session.user.fullname = "PUPPETMASTER"; 
-          socket.handshake.session.user.ssn = { ssn: config.service.unmutable_admin};
+          socket.handshake.session.user.id = config.service.unmutable_admin;
           socket.handshake.session.save();        
           auditlog("auth",socket.handshake.session,"authenticationResolveRequest(puppetmaster)");
           socket.emit("authenticationResolveResponse", { status: 'completed' });
           return;
         }
 
-        config.service.admins.forEach(admin => {
+        config.admins.forEach(admin => {
           if (admin.ssn === result.user.id) {
             socket.handshake.session.authenticated=admin.level.split(",");
             socket.handshake.session.user = result.user;

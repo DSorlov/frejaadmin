@@ -18,6 +18,7 @@
                 $('#pendingOrgIdListView').hide();
                 $('#classListView').hide();
                 $('#logListView').hide();
+                socket.emit("userListRequest");
                 $('#userListView').show();
                 break;
             //<% } %>
@@ -27,15 +28,17 @@
                 $('#pendingOrgIdListView').hide();
                 $('#classListView').hide();
                 $('#userListView').hide();
+                socket.emit("auditListRequest");
                 $('#logListView').show();
                 break;
             //<% } %>
             //<% if (session.authenticated.includes('classadmin')) { %>
-                case 'classListView':
+             case 'classListView':
                 $('#logListView').hide();
                 $('#orgIdListView').hide();
                 $('#pendingOrgIdListView').hide();
                 $('#userListView').hide();
+                socket.emit("classListRequest");
                 $('#classListView').show();
                 break;
             //<% } %>
@@ -74,7 +77,15 @@
     // Initialize the application
     socket.on("appInitializationResponse", response => {
         socket.emit("classListRequest");
-        changeView("orgIdListView");
+        //<% if (session.authenticated.includes('orgidadmin')) { %>
+            changeView("orgIdListView");
+        //<% } else if (session.authenticated.includes('useradmin')) { %>
+            changeView("userListView");
+        //<% } else if (session.authenticated.includes('classadmin')) { %>
+            changeView("classListView");
+        //<% } else if (session.authenticated.includes('logviewer')) { %>
+            changeView("logListView");
+        //<% } %>
     });
 
     socket.on("classListResponse", response => {
@@ -103,7 +114,6 @@
     //<% if (session.authenticated.includes('useradmin')) { %>
     $("#userListLink").on("click", function(e) {
         e.preventDefault();
-        socket.emit("userListRequest");
         changeView("userListView");
     });
     socket.on("userListResponse", response => {
@@ -176,7 +186,6 @@
             $('#messageText').text(response.description);
             $('#messageModal').modal('show');            
         } else {
-            socket.emit("userListRequest");
             $('#messageTitle').text("Edit user succeeded");
             $('#messageText').text("The user have been changed");
             changeView('userListView',true);
@@ -189,7 +198,6 @@
             $('#messageText').text(response.description);
             $('#messageModal').modal('show');            
         } else {
-            socket.emit("userListRequest");
             $('#messageTitle').text("Delete user succeeded");
             $('#messageText').text("The user have been deleted");
             changeView('userListView',true);
@@ -205,7 +213,6 @@
             $('#messageText').text(response.description);
             $('#messageModal').modal('show');            
         } else {
-            socket.emit("classListRequest");
             $('#messageTitle').text("Add new class succeeded");
             $('#messageText').text("The class have been created");
             changeView('classListView',true);
@@ -218,7 +225,6 @@
             $('#messageText').text(response.description);
             $('#messageModal').modal('show');            
         } else {
-            socket.emit("classListRequest");
             $('#messageTitle').text("Delete class succeeded");
             $('#messageText').text("The class have been deleted");
             changeView('classListView',true);
@@ -390,7 +396,6 @@
 
     $("#logViewLink").on("click", function(e) {
         e.preventDefault();
-        socket.emit("auditListRequest");
         changeView("logListView");        
     });    
     //<% } %>

@@ -18,7 +18,7 @@
   "homepage": "https://github.com/dsorlov/frejaadmin#readme",
   "dependencies": {
     "dateformat": "^4.3.1",
-    "eid-provider": "^0.1.8",
+    "eid-provider": "^0.1.9",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
