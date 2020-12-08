@@ -7,6 +7,13 @@
 # frejaadmin
 A minimalistic Freja eID Organisation ID administration service. Designed to run as a container. Using [eid-provider](https://github.com/DSorlov/eid-provider) 0.1.9 or later to integrate with Freja APIs. Prebuilt image availiable on [docker hub](https://hub.docker.com/repository/docker/dsorlov/frejaadmin)
 
+## Run in docker
+Create a directory to hold configuration and audit etc (ie everything you need to persist). When you start the first time it will create config files. Edit these and then restart the instance. On first run it is running the Freja eID demo key and using demo credentials. You will need to change the admin accounts.
+
+```
+docker run -d --name="frejaadmin" -v /PATH_TO_YOUR_CONFIG:/usr/src/frejaadmin/data -p 3180:3180 --net=host dsorlov/frejaadmin:stable
+```
+
 ## Config directory (data)
 - config.json: Main config file
 - favicon.ico: If it exists it will be used, otherwise will use built in
