@@ -160,8 +160,8 @@ if (fs.existsSync(path.join(__dirname, './data', 'favicon.ico'))) {
 }
 
 // If static files exists serve them also!
-if (fs.existsSync(path.join(__dirname, './config/static'))) {
-  app.use("/static/", express.static(path.join(__dirname, './config/static')));
+if (fs.existsSync(path.join(__dirname, './data/static'))) {
+  app.use("/static/", express.static(path.join(__dirname, './data/static')));
 }
 
 // Show the login form
