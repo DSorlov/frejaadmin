@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title><%= service_title %></title>
+        <link href="/css/frejaadmin.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
+    </head>
+
+    <body class="bg-primary">
+        <div id="layoutAuthentication">
+            <div id="layoutAuthentication_content">
+                <main>
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-5">
+                                <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">
+                                        <img src="<%= logo_url %>" /><br/><br/>
+                                        <%= service_title %></h3></div>
+                                    <div class="card-body text-center">
+                                        <br/>
+                                        <img id="loginQR" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" height="200" width="200" /><br/>
+                                        <span id="loginStatus">Initializing..</span>
+                                        <br/>
+                                        <br/>
+                                    </div>
+                                    <div class="card-footer text-center">
+                                        <div class="small"><%= help_text %></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            <div id="layoutAuthentication_footer">
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; <%= company_name %><br/>FrejaAdmin <%= moduleversion %> running on Node <%= nodeversion %></div>
+                            <div>
+                                <a href="<%= privacy_url %>">Privacy Policy</a>
+                                &middot;
+                                <a href="<%= terms_url %>">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+
+        <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-body text-center"><br/>
+                  <h5 id="messageTitle">Authentication in progress..</h5>
+                  <span id="messageText">Authentication in progress..</h5>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" id="messageClose" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/frejaadmin.js"></script>
+        <script src="/js/loginform.js"></script>
+    </body>
+
+</html>

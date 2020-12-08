@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title><%= service_title %></title>
+        <link href="/css/frejaadmin.css" rel="stylesheet" />
+        <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <a class="navbar-brand" href="/"><%= service_title %></a>
+            <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                                
+                            <% if (session.authenticated.includes('orgidadmin')) { %>
+                            <div class="sb-sidenav-menu-heading">ORGID</div>
+                            <a class="nav-link" id="orgIdListAll">
+                                <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                                Currently issued
+                            </a>                           
+                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user-tag"></i></div>
+                                List by class
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav" id="orgIdFilterList">
+                                </nav>
+                            </div>
+                            <a class="nav-link" id="orgIdViewPendingLink">
+                                <div class="sb-nav-link-icon"><i class="fas fa-question-circle"></i></div>
+                                Pending issuance
+                            </a>                            
+                            <a class="nav-link" id="orgIdIssueLink">
+                                <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
+                                Issue new OrgID
+                            </a>                            
+                            <% } %>
+
+                            <% if (session.authenticated.includes('classadmin')) { %>
+                            <div class="sb-sidenav-menu-heading">CLASSES</div>
+                            <a class="nav-link" id="classListAll">
+                                <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                                   List all classes
+                                </a>                           
+                            <a class="nav-link" id="createClassLink">
+                                <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
+                                    Create new class
+                            </a>                            
+                            <% } %>
+
+                            <% if (session.authenticated.includes('logviewer')) { %>
+                            <div class="sb-sidenav-menu-heading">AUDITING</div>
+                            <a class="nav-link" id="logViewLink">
+                                <div class="sb-nav-link-icon"><i class="fas fa-file-alt"></i></div>
+                                View audit logs
+                            </a>
+                            <% } %>
+
+                            <div class="sb-sidenav-menu-heading">USER</div>
+                            <% if (session.authenticated.includes('useradmin')) { %>
+                                <a class="nav-link" id="userListLink">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-user-lock"></i></div>
+                                    Users
+                                </a>
+                                <a class="nav-link" id="createAdminLink">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
+                                    Add new admin
+                                </a>
+                            <% } %>
+                            <a class="nav-link" id="signOutLink">
+                                <div class="sb-nav-link-icon"><i class="fas fa-sign-out-alt"></i></div>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                    <div class="sb-sidenav-footer">
+                        <div class="small">Logged in as:</div>
+                        <%= session.user.fullname %>
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <% if (session.authenticated.includes('orgidadmin')) { %>
+                     <div class="container-fluid" id="orgIdListView" style="display:none"><br/>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="orgIdTable" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>Discriminator</th>
+                                                <th>OrgID Class</th>
+                                                <th>OrgID Data</th>
+                                                <th>Status</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Discriminator</th>
+                                                <th>OrgID Class</th>
+                                                <th>OrgID Data</th>
+                                                <th>Status</th>
+                                                <th></th>
+                                            </tr>
+                                        </tfoot>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                    </div>
+                    <div class="container-fluid" id="pendingOrgIdListView" style="display:none"><br/>
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="pendingOrgIdTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Discriminator</th>
+                                        <th>OrgID Class</th>
+                                        <th>OrgID Data</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>Discriminator</th>
+                                        <th>OrgID Class</th>
+                                        <th>OrgID Data</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <% } %>
+                    <% if (session.authenticated.includes('classadmin')) { %>
+                    <div class="container-fluid" id="classListView" style="display:none"><br/>
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="classListTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Class</th>
+                                        <th>Identifier</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>Class</th>
+                                        <th>Identifier</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <% } %>
+                    <% if (session.authenticated.includes('logviewer')) { %>
+                    <div class="container-fluid" id="logListView" style="display:none"><br/>
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="logListTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Logfile</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>Logfile</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <% } %>
+                    <% if (session.authenticated.includes('useradmin')) { %>
+                        <div class="container-fluid" id="userListView" style="display:none"><br/>
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="userListTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>SSN</th>
+                                            <th>Permissions</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>SSN</th>
+                                            <th>Permissions</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    <% } %>    
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; <%= company_name %><br/>FrejaAdmin <%= moduleversion %> running on Node <%= nodeversion %></div>
+                            <div>
+                                <a href="<%= privacy_url %>">Privacy Policy</a>
+                                &middot;
+                                <a href="<%= terms_url %>">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>            </div>
+        </div>
+
+        <% if (session.authenticated.includes('orgidadmin')) { %>
+        <div class="modal fade" id="issueOrgIdModal" tabindex="-1" role="dialog" aria-labelledby="issueOrgIdModal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Add new OrgID</h5>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="small mb-1" for="newOrgIdDiscriminatorType">Discriminator Type</label>
+                                    <select class="form-control" id="newOrgIdDiscriminatorType">
+                                        <option value="SSN" selected>Social security</option>
+                                        <option value="EMAIL">Email address</option>
+                                        <option value="PHONE">Phone number</option>
+                                      </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="small mb-1" for="newOrgIdDiscriminatorData">Discriminator Data</label>
+                                    <input class="form-control" id="newOrgIdDiscriminatorData" type="text" placeholder="Enter discriminator" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="small mb-1" for="newOrgIdClass">OrgID Class</label>
+                            <select class="form-control" id="newOrgIdClass">
+                              </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="small mb-1" for="newOrgIdIdentifier">Identifier</label>
+                            <input class="form-control" id="newOrgIdIdentifier" type="text" placeholder="Enter identifier" />
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="issueOrgIdModalCancel" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="issueOrgIdModalSubmit" data-dismiss="modal">Create request</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% } %>
+        <% if (session.authenticated.includes('classadmin')) { %>
+          <div class="modal fade" id="newOrgIdClassModal" tabindex="-1" role="dialog" aria-labelledby="newOrgIdClassModal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Add new OrgID Class</h5>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label class="small mb-1" for="newOrgIdClassName">OrgID class Name</label>
+                            <input class="form-control" id="newOrgIdClassName" type="text" placeholder="OrgID Class Name" />
+                        </div>
+                        <div class="form-group">
+                            <label class="small mb-1" for="newOrgIdClassIdentifier">OrgID Identifier Name</label>
+                            <input class="form-control" id="newOrgIdClassIdentifier" type="text" placeholder="OrgID Identifier Name" />
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="newOrgIdClassModalCancel" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="newOrgIdClassModalSubmit" data-dismiss="modal">Create new class</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% } %>
+        <% if (session.authenticated.includes('useradmin')) { %>
+            <div class="modal fade" id="userCrEditModal" tabindex="-1" role="dialog" aria-labelledby="userCrEditModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 id="userCrEditModalTitle">Title..</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label class="small mb-1" for="userCrEditSsn">Social security number</label>
+                                <input  id="userCrEditSsn" type="text" placeholder="Social security number" />
+                            </div>
+                            <div class="form-group">
+                                <label class="small mb-1" for="userCrEditPermissions">Permissions</label>
+                                <select class="form-control" multiple="multiple" id="userCrEditPermissions" name="userCrEditPermissions">
+                                    <option value='orgidadmin'>OrgID Admin</option>
+                                    <option value='classadmin'>Class Admin</option>
+                                    <option value='useradmin'>User Admin</option>
+                                    <option value='logadmin'>Log Admin</option>
+                                    <option value='logviewer'>Log Viewer</option>
+                                </select>
+                            </div>
+                        </form>
+    
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="userCrEditModalCancel" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="userCrEditModalSubmit" data-dismiss="modal">Process</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+
+          <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-body text-center"><br/>
+                  <h5 id="messageTitle">Authentication in progress..</h5>
+                  <span id="messageText">Authentication in progress..</h5>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" id="messageModalClose" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>       
+          
+          <div class="modal fade" id="queryDialog" tabindex="-1" role="dialog" aria-labelledby="queryDialogLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-body text-center"><br/>
+                  <h5 id="queryTitle">Authentication in progress..</h5>
+                  <span id="queryText">Authentication in progress..</h5>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" id="queryDialogAbort" data-dismiss="modal">Abort</button>
+                  <button type="button" class="btn btn-primary" id="queryDialogContinue" data-dismiss="modal">Continue</button>
+                </div>
+              </div>
+            </div>
+          </div>          
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/frejaadmin.js"></script>
+        <script src="/js/adminform.js"></script>
+        <script src="/resources/valfor.js"></script>
+        <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    </body>
+</html>

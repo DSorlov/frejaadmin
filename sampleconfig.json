@@ -1,0 +1,35 @@
+{
+    "gui": {
+      "logo_url": "/resources/frejalogo.png",
+      "terms_url": "https://www.microsoft.com/en-US/servicesagreement/",
+      "privacy_url": "https://privacy.microsoft.com/en-US/privacystatement",
+      "help_text": "Doing the magic samba.",
+      "service_title": "Freja OrgID Admin",
+      "company_name": "Company Name"
+    },
+    "types": [
+      {
+        "title": "Sample OrgID",
+        "attribute": "Member ID"
+      }
+    ],
+    "eidprovider": {
+      "client_cert": "frejaeid_test.pfx",
+      "password": "test",
+      "minimum_level": "EXTENDED"
+    },
+    "admins": [
+      {
+        "ssn": "199912245579",
+        "level": "useradmin,classadmin,logviewer"
+      }
+    ],
+    "service": {
+      "eidprofile": "testing",
+      "auditing": "auth,orgid,user,log",
+      "hostname": "server.domain.com",
+      "port": 3000,
+      "cookie_secret": "36c25f37-92c6-4f95-9c09-c9164b391a55",
+      "puppetmaster": "199912245579"
+    }
+  }
