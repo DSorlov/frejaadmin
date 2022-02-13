@@ -1,6 +1,5 @@
 const express       = require('express');
 const session       = require('express-session')
-const bodyParser    = require('body-parser');
 const fs            = require('fs');
 const ejs           = require('ejs');
 const path          = require('path');
@@ -10,6 +9,7 @@ const helmet        = require('helmet');
 const favicon       = require('serve-favicon')
 const forge         = require("node-forge");
 const dateFormat    = require("dateformat");
+const eid           = require('eid');
 
 // Get our config!
 const version = process.env.npm_package_version ? process.env.npm_package_version : JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'))).version;
@@ -115,8 +115,9 @@ function auditlog(lvl,session,message) {
 
 // Create a communication provider with our backend
 function initProvider(provider='frejaorgid') {
-  const eidprovider   = require('eid-provider')(provider)
-  const eidconfig = eidprovider.settings[config.service.eidprofile];
+
+  var eidconfig = eid.configFactory({clientType: provider, enviroment: config.service.eidprofile});
+
   for(var override in config.eidprovider) {
     if (override==='ca_cert'||override==='jwt_cert'||override==='client_cert'){
       eidconfig[override] = fs.readFileSync(path.join(__dirname, './data', config.eidprovider[override]));
@@ -124,8 +125,8 @@ function initProvider(provider='frejaorgid') {
       eidconfig[override] = config.eidprovider[override];
     }
   }
-  eidprovider.initialize(eidconfig);
-  return eidprovider;
+
+  return eid.clientFactory(eidconfig);
 }
 
 // Create a generic object for the error pages variables
@@ -142,6 +143,15 @@ function commonPageVars(additionalFields = {}) {
   }, additionalFields);
 }
 
+const helmetPolicy = {
+  useDefaults: true,
+  directives: {
+    "script-src": ["https://cdnjs.cloudflare.com","https://code.jquery.com","https://cdn.jsdelivr.net","http://localhost:3180","self", "unsafe-inline", "unsafe-eval"],
+    "script-src-elem": ["https://cdnjs.cloudflare.com","https://code.jquery.com","https://cdn.jsdelivr.net","http://localhost:3180","self", "unsafe-inline", "unsafe-eval"],
+    "img-src": ["self","data:","https://*.frejaeid.com","http://localhost:3180"]
+  }
+};
+
 // ***************************************************************************************
 // MAIN APPLICATION CODE
 // ***************************************************************************************
@@ -149,7 +159,8 @@ function commonPageVars(additionalFields = {}) {
 app.set('trust proxy', 1) // trust first proxy
 app.use(ee_session);
 app.use(helmet());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(helmet.contentSecurityPolicy(helmetPolicy));
+app.use(express.urlencoded({extended: true}));
 app.use("/resources/", express.static(path.join(__dirname, './resources')));
 
 // Map favicon if it exists
